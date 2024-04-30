@@ -26,10 +26,7 @@ const uploadCloudinary_1 = __importDefault(require("./services/uploadCloudinary"
 exports.app = (0, express_1.default)();
 exports.app.use(express_1.default.json({ limit: "50mb" }));
 exports.app.use(express_1.default.urlencoded({ limit: '50mb' }));
-exports.app.use((0, cors_1.default)({
-    origin: "http://localhost:5173",
-    credentials: true,
-}));
+exports.app.use((0, cors_1.default)());
 exports.app.use((0, cookie_parser_1.default)(process.env.cookie_secret));
 exports.app.use((0, express_session_1.default)({
     name: "spark",
@@ -49,7 +46,7 @@ exports.app.use("/api/friend", friend_routes_1.friend_router);
 exports.app.use("/api/post", post_routes_1.post_router);
 exports.app.get("/api/auth/google", passport_1.default.authenticate("google", {
     successRedirect: "/success",
-    failureRedirect: "http://localhost:5173/login"
+    failureRedirect: "https://spark-9j9e.onrender.com/login"
 }));
 exports.app.get('/success', (req, res) => {
     var _a, _b, _c, _d;
@@ -60,7 +57,7 @@ exports.app.get('/success', (req, res) => {
         res.cookie("accessToken", accessToken);
         res.cookie("refreshToken", refreshToken);
     }
-    res.redirect('http://localhost:5173');
+    res.redirect('https://spark-9j9e.onrender.com');
 });
 exports.app.post("/api/cloud", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { file } = (req.body);

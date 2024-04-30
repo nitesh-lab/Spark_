@@ -14,7 +14,7 @@
  
 //     useEffect(()=>{
 //         async function getMessages() {
-//            const res=await axios.post("http://localhost:3000/friend/getMessages",{Uid:receiver_id},{withCredentials:true})
+//            const res=await axios.post("https://spark-9j9e.onrender.com/api/friend/getMessages",{Uid:receiver_id},{withCredentials:true})
 //            setMessages(res.data.messages);
 //         }
 //         getMessages();

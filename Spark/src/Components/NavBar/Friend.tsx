@@ -14,7 +14,7 @@ export default function Friend({Uid,name,image,setFriends}:{setFriends:Dispatch<
         })
     })
 }
-        await axios.post("http://localhost:3000/user/friendrequestAccept",{Uid:Uid},{withCredentials:true});
+        await axios.post("https://spark-9j9e.onrender.com/api/user/friendrequestAccept",{Uid:Uid},{withCredentials:true});
     }
    
     async function handleReject(){
@@ -27,7 +27,7 @@ export default function Friend({Uid,name,image,setFriends}:{setFriends:Dispatch<
             })
         }
 
-        await axios.post("http://localhost:3000/user/friendrequestReject",{Uid:Uid},{withCredentials:true});
+        await axios.post("https://spark-9j9e.onrender.com/api/user/friendrequestReject",{Uid:Uid},{withCredentials:true});
     }
    
     return(

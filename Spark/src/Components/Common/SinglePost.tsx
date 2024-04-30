@@ -16,7 +16,7 @@ export default function SinglePost({ uid,element }: {uid:string, element: post }
        
         async function CheckLike() {  
             if(uid && element.post_id){ // receiver id and post id
-           const data=await axios.post("http://localhost:3000/post/like",{"Uid":uid,"post_id":element.post_id},{withCredentials:true});
+           const data=await axios.post("https://spark-9j9e.onrender.com/api/post/like",{"Uid":uid,"post_id":element.post_id},{withCredentials:true});
                 setcanlike(data.data.status)
         }else{
             return

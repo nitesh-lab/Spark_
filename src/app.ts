@@ -12,10 +12,7 @@ export const app=express();
 app.use(express.json({limit:"50mb"}));
 app.use(express.urlencoded({limit: '50mb'}));
 
-app.use(cors({
-  origin:"http://localhost:5173",
-  credentials:true,
-}));
+app.use(cors());
 app.use(cookieParser(process.env.cookie_secret));
 
 app.use(session({
@@ -39,7 +36,7 @@ app.use("/api/post",post_router);
 
 app.get("/api/auth/google", passport.authenticate("google", {
   successRedirect: "/success",
-  failureRedirect: "http://localhost:5173/login"
+  failureRedirect: "https://spark-9j9e.onrender.com/login"
 }));
 
 app.get('/success', (req, res) => {
@@ -61,7 +58,7 @@ app.get('/success', (req, res) => {
       res.cookie("accessToken", accessToken);
       res.cookie("refreshToken", refreshToken);
   }
-  res.redirect('http://localhost:5173');
+  res.redirect('https://spark-9j9e.onrender.com');
 });
 
 app.post("/api/cloud",async(req:Request,res:Response)=>{

@@ -31,7 +31,7 @@ export default function NavBar({friends,setFriends}:{friends?:friend[],setFriend
     
         async function sendRequest() {
             try {
-                const response = await axios.post("http://localhost:3000/user/search", {"name":search_user },{withCredentials:true});
+                const response = await axios.post("https://spark-9j9e.onrender.com/api/user/search", {"name":search_user },{withCredentials:true});
                 console.log(response.data);
                 if(response.data.users.length>0){
                 setUsers(response.data.users);

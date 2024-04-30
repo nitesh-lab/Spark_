@@ -75,13 +75,11 @@ function handleLogin(req, res) {
                 req.session.user_access = accessToken;
                 console.log("line 120 ");
                 console.log(accessToken);
-                // return res.status(200).cookie("accesstoken", accessToken).cookie("refreshtoken", refreshToken)
-                //     .json({ accessToken: accessToken });
                 if (accessToken && refreshToken) {
                     res.cookie("accessToken", accessToken);
                     res.cookie("refreshToken", refreshToken);
                 }
-                res.redirect('http://localhost:5173');
+                res.redirect('https://spark-9j9e.onrender.com');
             }
         }
         catch (error) {

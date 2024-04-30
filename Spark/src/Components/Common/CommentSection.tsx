@@ -15,7 +15,7 @@ export default function CommentSection({ SetshowComment, id }: { SetshowComment?
     useEffect(() => {
         async function getAllComments() {
             if (id) {
-                const data = await axios.post("http://localhost:3000/post/getAllComments", { post_id: id }, { withCredentials: true });
+                const data = await axios.post("https://spark-9j9e.onrender.com/api/post/getAllComments", { post_id: id }, { withCredentials: true });
                 setComments(data.data.user);
             }
         }

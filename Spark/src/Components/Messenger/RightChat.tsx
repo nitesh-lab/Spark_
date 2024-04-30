@@ -85,7 +85,7 @@ export default function RightChat({user}:{user:user_type}){
 },[])
 
 async function handleRefresh(){
-   const res=await axios.post("http://localhost:3000/friend/getFriendChat",{Uid:user.Uid,time:index.current||""},{withCredentials:true});
+   const res=await axios.post("https://spark-9j9e.onrender.com/api/friend/getFriendChat",{Uid:user.Uid,time:index.current||""},{withCredentials:true});
       console.log(res);
       if(res.data.messages.length>0){
          console.log("coming");
@@ -103,7 +103,7 @@ useEffect(()=>{
    
    async function getChatFriend() {
       if(user){     
-      const res=await axios.post("http://localhost:3000/friend/getFriendChat",{Uid:user.Uid},{withCredentials:true});
+      const res=await axios.post("https://spark-9j9e.onrender.com/api/friend/getFriendChat",{Uid:user.Uid},{withCredentials:true});
       console.log(res);
       setMessages(res.data.messages);
       }
@@ -127,7 +127,7 @@ useEffect(()=>{
    useEffect(()=>{
       async function  handleUpload() {
          if(base64format){
-      const res=await axios.post("http://localhost:3000/cloud",{file:base64format,type:"audio"});
+      const res=await axios.post("https://spark-9j9e.onrender.com/api/cloud",{file:base64format,type:"audio"});
       console.log(res.data.message);
       setURL(res.data.message);
       }

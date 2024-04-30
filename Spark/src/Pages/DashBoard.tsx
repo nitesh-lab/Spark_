@@ -61,10 +61,10 @@ function Dashboard(){
 
         async function getUser(){
             if(!("Uid" in user)){
-                const data:obj=await axios.get("http://localhost:3000/user/",{withCredentials:true});
+                const data:obj=await axios.get("https://spark-9j9e.onrender.com/api/user/",{withCredentials:true});
                 dispatch({type:"addUser",payload:data.data?.user});
                
-               const result=await axios.get("http://localhost:3000/user/getFriendRequests",{withCredentials:true});
+               const result=await axios.get("https://spark-9j9e.onrender.com/api/user/getFriendRequests",{withCredentials:true});
                
                const d:friend[]=(result.data.users)as friend[]
 

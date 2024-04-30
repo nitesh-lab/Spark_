@@ -34,7 +34,7 @@ export default function Profile() {
             }
             else{
                 console.log("pahle token laaya")
-       const data=await axios.get("http://localhost:3000/user/check",{withCredentials:true});
+       const data=await axios.get("https://spark-9j9e.onrender.com/api/user/check",{withCredentials:true});
     dispatch({type:"add",payload:data && data.data && data.data.accessToken ? data.data.accessToken:""});
             }
         }
@@ -44,8 +44,8 @@ export default function Profile() {
     useEffect(()=>{
        async function getUser() {
         if(data){
-            const res=await axios.post("http://localhost:3000/user/userProfile",{Uid:data},{withCredentials:true});
-            const res2=await axios.post("http://localhost:3000/user/checkEligible",{Uid:data},{withCredentials:true});
+            const res=await axios.post("https://spark-9j9e.onrender.com/api/user/userProfile",{Uid:data},{withCredentials:true});
+            const res2=await axios.post("https://spark-9j9e.onrender.com/api/user/checkEligible",{Uid:data},{withCredentials:true});
             setUser(res.data.user);
             setCheck(res2.data.state);    
         }
@@ -58,7 +58,7 @@ export default function Profile() {
 
         async function getAllPosts(){
             if(data){
-           const res= await axios.post("http://localhost:3000/post/getAllPosts",{Uid:data},{withCredentials:true});
+           const res= await axios.post("https://spark-9j9e.onrender.com/api/post/getAllPosts",{Uid:data},{withCredentials:true});
                 setPosts(res.data.posts)
         }
        
@@ -102,7 +102,7 @@ export default function Profile() {
    async function handleFollow(){
 
         if(check==="follow"){    
-       const res=await axios.post("http://localhost:3000/user/newFollower",{receiverid:data},{withCredentials:true});
+       const res=await axios.post("https://spark-9j9e.onrender.com/api/user/newFollower",{receiverid:data},{withCredentials:true});
         console.log(res);
         setCheck("pending")
    }

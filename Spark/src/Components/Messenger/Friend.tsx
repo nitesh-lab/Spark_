@@ -5,7 +5,7 @@ export default function Friend({current,setUser,user}:{current:(user_type&{count
 
   async function handleClick() {
     if(current.name!==user.name){
-    const res=await axios.post("http://localhost:3000/friend/single",{Uid:user.Uid},{withCredentials:true});
+    const res=await axios.post("https://spark-9j9e.onrender.com/api/friend/single",{Uid:user.Uid},{withCredentials:true});
     console.log(res.data)
     setUser(res.data.user)
     }

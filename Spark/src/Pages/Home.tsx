@@ -20,7 +20,7 @@ export default function Home() {
 
     useEffect(()=>{
         async function check():Promise<void> {
-           const data:check|undefined=await axios.get("http://localhost:3000/user/check",{withCredentials:true});
+           const data:check|undefined=await axios.get("https://spark-9j9e.onrender.com/api/user/check",{withCredentials:true});
             dispatch({type:"add",payload:data && data.data && data.data.accessToken ? data.data.accessToken:""});   
         }
         check();

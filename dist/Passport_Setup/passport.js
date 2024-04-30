@@ -19,7 +19,7 @@ const uuid_1 = require("uuid");
 passport_1.default.use(new passport_google_oauth20_1.Strategy({
     clientID: process.env.Google_id || '',
     clientSecret: process.env.Google_secret || '',
-    callbackURL: 'http://localhost:3000/auth/google'
+    callbackURL: 'https://spark-9j9e.onrender.com/api/auth/google'
 }, (accessToken, refreshToken, profile, cb) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {

@@ -87,7 +87,7 @@ function Content(){
     useEffect(()=>{
         async function getAllposts(){
            if(token.length>0){
-        const data=await axios.get("http://localhost:3000/user/CheckOfflinePosts",{withCredentials:true})
+        const data=await axios.get("https://spark-9j9e.onrender.com/api/user/CheckOfflinePosts",{withCredentials:true})
         console.log(data.data.posts)       
         setPosts(()=>[...data.data.posts])
         sethasMore(data.data.state)
@@ -133,7 +133,7 @@ function Content(){
          
         const time=posts[posts.length-1].posted   
    
-       const data=await axios.post("http://localhost:3000/user/getNewOfflinePosts",{time:time},{withCredentials:true});
+       const data=await axios.post("https://spark-9j9e.onrender.com/api/user/getNewOfflinePosts",{time:time},{withCredentials:true});
         
        setPosts((s)=>[...s,...data.data.user])
        sethasMore(data.data.state);

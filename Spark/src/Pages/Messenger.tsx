@@ -24,7 +24,7 @@ export default function Messenger(){
    useEffect(()=>{
       async function check():Promise<void> {
          if(!token){
-         const data:check|undefined=await axios.get("http://localhost:3000/user/check",{withCredentials:true});
+         const data:check|undefined=await axios.get("https://spark-9j9e.onrender.com/api/user/check",{withCredentials:true});
           dispatch({type:"add",payload:data && data.data && data.data.accessToken ? data.data.accessToken:""});   
          }
          }
@@ -34,7 +34,7 @@ export default function Messenger(){
 
    useEffect(()=>{
       async  function getFriends(){ 
-      const res=await axios.get("http://localhost:3000/friend/getAllFriend",{withCredentials:true})
+      const res=await axios.get("https://spark-9j9e.onrender.com/api/friend/getAllFriend",{withCredentials:true})
       setUsers(res.data.user); 
    }
    getFriends();
@@ -48,7 +48,7 @@ export default function Messenger(){
       socket.emit("UserCameOnline","Uid" in spark_user?spark_user.Uid:"");
       }
       else{
-      const data=await axios.get("http://localhost:3000/user/",{withCredentials:true});
+      const data=await axios.get("https://spark-9j9e.onrender.com/api/user/",{withCredentials:true});
       dispatch({type:"addUser",payload:data.data?.user});
          }
          }

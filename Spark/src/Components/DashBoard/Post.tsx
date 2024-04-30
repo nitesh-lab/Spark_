@@ -16,7 +16,7 @@ export default function Post({ post }: { post: post}) {
     useEffect(()=>{
         async function Check() {
             if("post_id" in post){
-        const data=await axios.post("http://localhost:3000/post/Checklike",{post_id:post.post_id},{withCredentials:true})
+        const data=await axios.post("https://spark-9j9e.onrender.com/api/post/Checklike",{post_id:post.post_id},{withCredentials:true})
         setLike(data.data.state)
             }
             else{
@@ -30,7 +30,7 @@ export default function Post({ post }: { post: post}) {
     console.log("coming")
 
     const eligible=eligibiletoLike
-    const data=await axios.post("http://localhost:3000/post/like",{"Uid":post.Uid,"post_id":post.post_id},{withCredentials:true});
+    const data=await axios.post("https://spark-9j9e.onrender.com/api/post/like",{"Uid":post.Uid,"post_id":post.post_id},{withCredentials:true});
     
     if(eligible){
         socket.emit("newLike",{_id:post.post_id});
@@ -41,7 +41,7 @@ export default function Post({ post }: { post: post}) {
     async function handleComment() {
         if(inp){
             console.log(inp);
-           await axios.post("http://localhost:3000/post/Comment",{"post_id":post.post_id,"comment":inp},{withCredentials:true});
+           await axios.post("https://spark-9j9e.onrender.com/api/post/Comment",{"post_id":post.post_id,"comment":inp},{withCredentials:true});
             setInp("");
             socket.emit("newComment",{_id:post.post_id})
         }

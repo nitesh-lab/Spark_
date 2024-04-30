@@ -18,7 +18,7 @@ export default function Modal({ setmodal,videourl,setVideourl}: { setmodal: Reac
         if(videourl){
             if("Uid" in user){
                 setloading(true);
-       await axios.post("http://localhost:3000/user/post",{"Uid":user.Uid,"text":postContent,"video":videourl},{withCredentials:true});
+       await axios.post("https://spark-9j9e.onrender.com/api/user/post",{"Uid":user.Uid,"text":postContent,"video":videourl},{withCredentials:true});
                 setloading(false)
                 setPostContent("");
             setSelectedFile(null);
@@ -37,7 +37,7 @@ export default function Modal({ setmodal,videourl,setVideourl}: { setmodal: Reac
     
         try {
             setloading(true);
-            await axios.post("http://localhost:3000/user/post", formData,{withCredentials:true});
+            await axios.post("https://spark-9j9e.onrender.com/api/user/post", formData,{withCredentials:true});
             setloading(false);
           
             setPostContent("");

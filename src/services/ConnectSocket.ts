@@ -26,7 +26,7 @@ export function ConnectSocket(server:http.Server){
 
     const io=new Server(server,{
     cors:{
-        origin:"http://localhost:5173",
+        origin:"https://spark-9j9e.onrender.com",
         credentials:true,
     }
    })

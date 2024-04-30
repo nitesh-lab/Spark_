@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 passport.use(new GoogleStrategy({
     clientID: process.env.Google_id || '',
     clientSecret: process.env.Google_secret || '',
-    callbackURL: 'http://localhost:3000/auth/google'
+    callbackURL: 'https://spark-9j9e.onrender.com/api/auth/google'
   }, async (accessToken: string, refreshToken: string, profile, cb) => {
     try {
       const { name, email, picture } = profile._json;
