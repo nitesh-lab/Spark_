@@ -20,7 +20,7 @@ const ConnectDB_1 = require("./db/ConnectDB");
 require("./Passport_Setup/passport");
 const http_1 = __importDefault(require("http"));
 const ConnectSocket_1 = require("./services/ConnectSocket");
-require("../src/services/createSupabaseclient");
+require("../dist/services/createSupabaseclient");
 const path_1 = __importDefault(require("path"));
 const express_1 = __importDefault(require("express"));
 exports.server = http_1.default.createServer(app_1.app);
