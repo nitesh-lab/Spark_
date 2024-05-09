@@ -205,7 +205,7 @@ function handlePost(req, res) {
                     });
                     yield Unread_post_1.UnseenPost.bulkWrite(bulkOps);
                 }
-                return res.status(200).json({ message: "Post created successfully." });
+                return res.status(200).json({ message: "Post created successfully.", data: user });
             }
             else {
                 if (!(req.file && req.file.path)) {
@@ -261,7 +261,7 @@ function handlePost(req, res) {
                     });
                     yield Unread_post_1.UnseenPost.bulkWrite(bulkOps);
                 }
-                return res.status(200).json({ message: "Post created successfully." });
+                return res.status(200).json({ message: "Post created successfully.", data: user });
             }
         }
         catch (error) {
@@ -486,45 +486,63 @@ function EligibletoFollow(req, res) {
 exports.EligibletoFollow = EligibletoFollow;
 function CheckOfflinePosts(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const user = (req.user);
-        const result = yield Unread_post_1.UnseenPost.aggregate([
-            {
-                $match: { receiverId: user._id,
-                },
-            },
-            { $unwind: "$posts" },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "senderId",
-                    foreignField: "_id",
-                    as: "sender"
-                }
-            },
-            {
-                $lookup: {
-                    from: "posts",
-                    localField: "posts",
-                    foreignField: "_id",
-                    as: "post"
-                }
-            },
-            {
-                $sort: { "post.posted": -1 },
-            },
-            { $project: { sender: { $arrayElemAt: ["$sender", 0] }, post: { $arrayElemAt: ["$post", 0] } } },
-            { $limit: 3 }
-        ]);
-        let ans = [];
-        console.log("result");
-        result.map((e) => {
-            ans.push({ post_id: e.post._id, Uid: e.sender.Uid, name: e.sender.name, comment: e.post.comment, avatar: e.sender.avatar, like: e.post.like.length, text: e.post.text, posted: e.post.posted, photo: e.post.photo, type: e.post.type });
-        });
-        if (ans.length == 3) {
-            return res.status(200).json({ "state": true, posts: ans });
+        try {
+            const user = req.user;
+            // Retrieve unseen posts
+            const unseenPosts = yield Unread_post_1.UnseenPost.aggregate([
+                { $match: { receiverId: user._id } },
+                { $unwind: "$posts" },
+                { $lookup: { from: "users", localField: "senderId", foreignField: "_id", as: "sender" } },
+                { $lookup: { from: "posts", localField: "posts", foreignField: "_id", as: "post" } },
+                { $sort: { "post.posted": -1 } },
+                { $project: { sender: { $arrayElemAt: ["$sender", 0] }, post: { $arrayElemAt: ["$post", 0] } } },
+                { $limit: 3 }
+            ]);
+            // Retrieve user's own posts
+            const userPosts = yield User_model_1.User.aggregate([
+                { $match: { _id: user._id } },
+                { $unwind: "$Posts" },
+                { $lookup: { from: "posts", localField: "Posts", foreignField: "_id", as: "result" } },
+                { $sort: { "result.posted": -1 } },
+                { $project: { post: { $arrayElemAt: ["$result", 0] } } },
+                { $limit: 3 }
+            ]);
+            const ans = [];
+            // Map unseen posts
+            unseenPosts.forEach(e => {
+                ans.push({
+                    post_id: e.post._id,
+                    Uid: e.sender.Uid,
+                    name: e.sender.name,
+                    comment: e.post.comment,
+                    avatar: e.sender.avatar,
+                    like: e.post.like.length,
+                    text: e.post.text,
+                    posted: e.post.posted,
+                    photo: e.post.photo,
+                    type: e.post.type
+                });
+            });
+            // Map user's own posts
+            userPosts.forEach(e => {
+                ans.push({
+                    post_id: e.post._id,
+                    Uid: user.Uid,
+                    name: user.name,
+                    comment: e.post.comment,
+                    avatar: user.avatar,
+                    like: e.post.like.length,
+                    text: e.post.text,
+                    posted: e.post.posted,
+                    photo: e.post.photo,
+                    type: e.post.type
+                });
+            });
+            return res.status(200).json({ "state": ans.length === 3, posts: ans });
         }
-        else {
-            return res.status(200).json({ "state": false, posts: ans });
+        catch (error) {
+            console.error(error);
+            return res.status(500).json({ "error": "Internal Server Error" });
         }
     });
 }
@@ -576,11 +594,33 @@ function getNewOfflinePosts(req, res) {
                 $limit: 3,
             }
         ]);
+        const userPosts = yield User_model_1.User.aggregate([
+            { $match: { _id: user._id } },
+            { $unwind: "$Posts" },
+            { $lookup: { from: "posts", localField: "Posts", foreignField: "_id", as: "result" } },
+            { $project: { post: { $arrayElemAt: ["$result", 0] } } },
+            {
+                $match: {
+                    "post.posted": { $lt: new Date(time) }
+                }
+            },
+            {
+                $sort: { "post.posted": -1 }
+            },
+            { $limit: 3 }
+        ]);
         const result = [];
-        newposts.map((e) => {
-            result.push({ post_id: e.post._id, Uid: e.sender.Uid, name: e.sender.name, comment: e.post.comment, avatar: e.sender.avatar, like: e.post.like.length, text: e.post.text, posted: e.post.posted, photo: e.post.photo, type: e.post.type });
+        userPosts.map((e) => {
+            result.push({ post_id: e.post._id, Uid: user.Uid, name: user.name, comment: e.post.comment, avatar: user.avatar,
+                like: e.post.like.length, text: e.post.text, posted: e.post.posted, photo: e.post.photo, type: e.post.type
+            });
         });
-        if (newposts.length < 3) {
+        newposts.map((e) => {
+            result.push({ post_id: e.post._id, Uid: e.sender.Uid, name: e.sender.name, comment: e.post.comment,
+                avatar: e.sender.avatar, like: e.post.like.length, text: e.post.text, posted: e.post.posted,
+                photo: e.post.photo, type: e.post.type });
+        });
+        if (result.length < 3) {
             return res.status(200).json({ state: false, "user": result });
         }
         return res.status(200).json({ state: true, "user": result });

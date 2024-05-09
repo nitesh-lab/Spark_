@@ -1,12 +1,14 @@
 import { RiImageAddLine } from "react-icons/ri";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import React, { useState } from "react";
 import { UseParent } from "../../Context/ParentProvider";
 import axios from "axios";
 import { user_data } from "../../Context/ParentProvider";
+import { post } from "./Center";
+import getCurrentDateTimeAsString from "../../Services/getTime";
 import Loaderpost from "../Common/Loaderpost";
 
-export default function Modal({ setmodal,videourl,setVideourl}: { setmodal: React.Dispatch<React.SetStateAction<boolean>>,videourl:string,setVideourl:React.Dispatch<React.SetStateAction<string>> }) {
+export default function Modal({setPosts, setmodal,videourl,setVideourl}: { setPosts:React.Dispatch<React.SetStateAction<post[]>>,setmodal: React.Dispatch<React.SetStateAction<boolean>>,videourl:string,setVideourl:React.Dispatch<React.SetStateAction<string>> }) {
     
     const { user}:{user:user_data|object,isDark:boolean} = UseParent();
     const [postContent, setPostContent] = useState(""); // State for post content
@@ -18,8 +20,15 @@ export default function Modal({ setmodal,videourl,setVideourl}: { setmodal: Reac
         if(videourl){
             if("Uid" in user){
                 setloading(true);
-       await axios.post("https://spark-9j9e.onrender.com/api/user/post",{"Uid":user.Uid,"text":postContent,"video":videourl},{withCredentials:true});
+       const response=await axios.post("https://spark-9j9e.onrender.com/api/user/post",{"Uid":user.Uid,"text":postContent,"video":videourl},{withCredentials:true});
                 setloading(false)
+                
+                setPosts((s)=>[{photo:response.data.data.photo,
+                    posted:getCurrentDateTimeAsString(),like:"0",
+                    comment:[],text:postContent,
+                    Uid:user.Uid,avatar:user.avatar,name:user.name,post_id:response.data.data._id 
+                    },...s])
+                
                 setPostContent("");
             setSelectedFile(null);
             setVideourl("");

@@ -53,7 +53,6 @@ interface obj2{
       }
 
 
-
 export async function handleSignup(req: Request, res: Response) {
 
 
@@ -260,7 +259,7 @@ export async function handlePost(req: Request, res: Response) {
               }
 
 
-              return res.status(200).json({ message: "Post created successfully." });
+              return res.status(200).json({ message: "Post created successfully.",data:user });
         }
 
         else{
@@ -327,7 +326,7 @@ export async function handlePost(req: Request, res: Response) {
            
                 await UnseenPost.bulkWrite(bulkOps);
             }
-        return res.status(200).json({ message: "Post created successfully." });
+            return res.status(200).json({ message: "Post created successfully.",data:user });
     
     } 
 }
@@ -576,55 +575,72 @@ export async function EligibletoFollow(req: Request, res: Response): Promise<voi
 }
 
 
-export async function CheckOfflinePosts(req:Request,res:Response) {
+export async function CheckOfflinePosts(req: Request, res: Response) {
+    try {
+        const user = req.user as user_type;
 
-    const user=(req.user) as user_type;
+        // Retrieve unseen posts
+        const unseenPosts = await UnseenPost.aggregate([
+            { $match: { receiverId: user._id } },
+            { $unwind: "$posts" },
+            { $lookup: { from: "users", localField: "senderId", foreignField: "_id", as: "sender" } },
+            { $lookup: { from: "posts", localField: "posts", foreignField: "_id", as: "post" } },
+            { $sort: { "post.posted": -1 } },
+            { $project: { sender: { $arrayElemAt: ["$sender", 0] }, post: { $arrayElemAt: ["$post", 0] } } },
+            { $limit: 3 }
+        ]);
 
-  const result:obj2[]=await UnseenPost.aggregate([  
-      {
-        $match: 
-        { receiverId:user._id,
-        },
-      },
-       { $unwind: "$posts" },
-          
-       {
-             $lookup: {
-                   from: "users",
-                  localField: "senderId",
-                 foreignField: "_id",
-                  as: "sender"
-                  }
-        },
-             {
-                $lookup: {
-                 from: "posts",
-                     localField: "posts",
-                    foreignField: "_id",
-                   as: "post"
-                 }
-               },
-               {
-                $sort:{"post.posted":-1},
-               },
-                  { $project: { sender: { $arrayElemAt: ["$sender", 0] }, post: { $arrayElemAt: ["$post", 0] } } },
-                  {$limit:3}
-              ])
-            let ans:obj1[]=[];
+        // Retrieve user's own posts
+        const userPosts = await User.aggregate([
+            { $match: { _id: user._id } },
+            { $unwind: "$Posts" },
+            { $lookup: { from: "posts", localField: "Posts", foreignField: "_id", as: "result" } },
+            { $sort: { "result.posted": -1 } },
+            { $project: { post: { $arrayElemAt: ["$result", 0] } } },
+            { $limit: 3 }
+        ]);
 
-            console.log("result")
-           
-              result.map((e)=>{
-        ans.push({post_id:e.post._id,Uid:e.sender.Uid,name:e.sender.name,comment:e.post.comment,avatar:e.sender.avatar,like:e.post.like.length,text:e.post.text,posted:e.post.posted,photo:e.post.photo,type:e.post.type});
-                
-    })
-            if(ans.length==3){
-        return res.status(200).json({"state":true,posts:ans})
-            }
-            else{
-                return res.status(200).json({"state":false,posts:ans})
-            }
+        const ans: obj1[] = [];
+
+        // Map unseen posts
+        unseenPosts.forEach(e => {
+            ans.push({
+                post_id: e.post._id,
+                Uid: e.sender.Uid,
+                name: e.sender.name,
+                comment: e.post.comment,
+                avatar: e.sender.avatar,
+                like: e.post.like.length,
+                text: e.post.text,
+                posted: e.post.posted,
+                photo: e.post.photo,
+                type: e.post.type
+            });
+        });
+
+        // Map user's own posts
+        userPosts.forEach(e => {
+            ans.push({
+                post_id: e.post._id,
+                Uid: user.Uid,
+                name: user.name,
+                comment: e.post.comment,
+                avatar: user.avatar,
+                like: e.post.like.length,
+                text: e.post.text,
+                posted: e.post.posted,
+                photo: e.post.photo,
+                type: e.post.type
+            });
+        });
+
+        return res.status(200).json({ "state": ans.length === 3, posts: ans });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ "error": "Internal Server Error" });
     }
+}
+
 
     export async function getNewOfflinePosts(req:Request,res:Response){
 
@@ -675,17 +691,56 @@ export async function CheckOfflinePosts(req:Request,res:Response) {
             $limit:3,
         }
       ]);
-      
+
+      interface userpost_type{
+       
+            _id: string
+            like:string[],
+            text: string,
+            photo: string,
+            posted:string,
+            type: "photo"|"video",
+            comment: string[],
+      }
+
+      const userPosts:{_id:string,post:userpost_type}[] = await User.aggregate<{_id:string,post:userpost_type}>([
+        { $match: { _id: user._id } },
+        { $unwind: "$Posts" },
+        { $lookup: { from: "posts", localField: "Posts", foreignField: "_id", as: "result" } },
+        { $project: { post: { $arrayElemAt: ["$result", 0] } } },
+        {
+            $match: {
+              "post.posted": { $lt: new Date(time) }
+            }
+          },
+          {
+            $sort:{"post.posted":-1}
+          },
+        
+        { $limit: 3 }
+    ]);
+ 
+
       const result:obj1[]=[]
+
+    userPosts.map((e)=>{
+        result.push({post_id:e.post._id,Uid:user.Uid,name:user.name,comment:e.post.comment,avatar:user.avatar,
+            like:e.post.like.length,text:e.post.text,posted:e.post.posted,photo:e.post.photo,type:e.post.type
+        })
+    })
 
        newposts.map((e)=>{
 
-        result.push({post_id:e.post._id,Uid:e.sender.Uid,name:e.sender.name,comment:e.post.comment,avatar:e.sender.avatar,like:e.post.like.length,text:e.post.text,posted:e.post.posted,photo:e.post.photo,type:e.post.type});
+        result.push({post_id:e.post._id,Uid:e.sender.Uid,name:e.sender.name,comment:e.post.comment,
+            avatar:e.sender.avatar,like:e.post.like.length,text:e.post.text,posted:e.post.posted,
+            photo:e.post.photo,type:e.post.type});
       
     }  )
-        if(newposts.length<3){
+        if(result.length<3){
             return res.status(200).json({state:false,"user":result})
         }
         return res.status(200).json({state:true,"user":result});
     }
+
+
 

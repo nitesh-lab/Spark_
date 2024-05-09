@@ -23,6 +23,7 @@ export default function Post({ post }: { post: post}) {
                 return;
             }
         }
+        //2024-04-30T14:03:40.285Z
         Check()
     },[post])
 

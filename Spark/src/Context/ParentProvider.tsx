@@ -26,7 +26,7 @@ type Parent=ReducerState & {
 }
 
 const ParentContext=createContext<Parent>({
-    isDark: false,
+    isDark: true,
     token: "",
     user:{},
     dispatch:()=>{}

@@ -15,7 +15,6 @@ import Messenger from "./Pages/Messenger";
 import Register from "./Pages/Register";
 
 
-
 export default function App(){
 
       const {isDark}=UseParent();

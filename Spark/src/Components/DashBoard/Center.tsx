@@ -22,28 +22,28 @@ import { socket } from "../../Services/ConnectSocket";
 
 export default function Center({setisVideoopen,videourl,setVideourl}:{setisVideoopen:React.Dispatch<React.SetStateAction<boolean>>,videourl:string,setVideourl:React.Dispatch<React.SetStateAction<string>>}){
     
-
+    const [posts,setPosts]=useState<post[]>([]);
     const [showmodal,setmodal]=useState<boolean>(false);
     return(
     <>
     <div className="w-[100%]  order-3 md:order-2  col-start-1 col-end-11 flex  items-center flex-col  md:row-start-1 md:row-end-2    row-start-3 row-end-4 md:col-start-3 md:col-end-9"> 
      <PostCreate setmodal={setmodal}  setisVideoopen={setisVideoopen}/>  
-     <Content/>
-     {(showmodal || videourl) && <Modal setmodal={setmodal} videourl={videourl} setVideourl={setVideourl}/>}
+     <Content posts={posts} setPosts={setPosts}/>
+     {(showmodal || videourl) && <Modal setPosts={setPosts}  setmodal={setmodal} videourl={videourl} setVideourl={setVideourl}/>}
      </div>
         </>
     )
 }
 
-function Content(){
+function Content({posts,setPosts}:{posts:post[],setPosts:React.Dispatch<React.SetStateAction<post[]>>}){
 
     const loading=false
     const error=false;
-    const [posts,setPosts]=useState<post[]>([]);
+   
 
     const {isDark,token}=UseParent();
 
-    const [hasmore,sethasMore]=useState<boolean>(false);
+    const [hasmore,sethasMore]=useState<boolean>(true);
     
     useEffect(()=>{
 
@@ -140,7 +140,7 @@ function Content(){
     }
 
     return  posts.length>0 ?
-        
+        <>
         <InfiniteScroll
         dataLength={posts.length}
             next={getNewPosts}
@@ -151,8 +151,14 @@ function Content(){
                 key={Math.random()}   
                     post={post}
                  />
+                 
             ))}
-        </InfiniteScroll>:<p>loading...</p>
+        </InfiniteScroll>
+        {!hasmore && 
+        <h1 className="text-black font-bold mb-[10px] sm:my-[20px] md:my-[30px] dark:text-white">Follow More Friends to see new Posts...</h1>
+        
+        }
+        </>:<p>loading...</p>
        }
     
 
